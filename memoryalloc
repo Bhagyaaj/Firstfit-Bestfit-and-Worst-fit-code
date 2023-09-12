@@ -1,0 +1,200 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Function to allocate memory blocks using First Fit (FF) algorithm
+void ff(int mem[], int mc, int pro[], int pc)
+{
+    int occupied[20], allocated[20], i, frag = 0;
+
+    // Initialize arrays to keep track of memory block occupation and allocation
+    for (i = 0; i < mc; i++)
+    {
+        occupied[i] = 0; // 0 means unoccupied
+    }
+    for (i = 0; i < pc; i++)
+    {
+        allocated[i] = -1; // -1 means not allocated
+    }
+
+    // Allocate processes using First Fit algorithm
+    for (i = 0; i < pc; i++)
+    {
+        for (int j = 0; j < mc; j++)
+        {
+            if ((pro[i] <= mem[j]) && (occupied[j] == 0))
+            {
+                allocated[i] = j; // Allocate process i to memory block j
+                occupied[j] = 1; // Mark memory block j as occupied
+                frag += mem[j] - pro[i]; // Calculate internal fragmentation
+                break;
+            }
+        }
+    }
+
+    // Print allocation results
+    printf("process no\tprocess size\tblock no\n");
+    for (i = 0; i < pc; i++)
+    {
+        if (allocated[i] != -1)
+        {
+            printf("%d\t\t%d\t\t%d\n", i + 1, pro[i], allocated[i] + 1);
+        }
+        else
+        {
+            printf("%d\t\t%d\t\tNot allocated\n", i + 1, pro[i]);
+        }
+    }
+    printf("Total Internal Fragmentation: %d\n", frag);
+}
+
+// Function to allocate memory blocks using Best Fit (BF) algorithm
+void bf(int mem[], int mc, int pro[], int pc)
+{
+    int occupied[20], allocated[20], i, frag = 0;
+
+    // Initialize arrays to keep track of memory block occupation and allocation
+    for (i = 0; i < mc; i++)
+    {
+        occupied[i] = 0; // 0 means unoccupied
+    }
+    for (i = 0; i < pc; i++)
+    {
+        allocated[i] = -1; // -1 means not allocated
+    }
+
+    // Allocate processes using Best Fit algorithm
+    for (i = 0; i < pc; i++)
+    {
+        int bindex = -1; // Index of the best-fit memory block
+        for (int j = 0; j < mc; j++)
+        {
+            if ((pro[i] <= mem[j]) && (occupied[j] == 0))
+            {
+                if (bindex == -1 || mem[j] < mem[bindex])
+                {
+                    bindex = j; // Update the best-fit index
+                }
+            }
+        }
+        if (bindex != -1)
+        {
+            allocated[i] = bindex; // Allocate process i to the best-fit block
+            occupied[bindex] = 1; // Mark the best-fit block as occupied
+            frag += mem[bindex] - pro[i]; // Calculate internal fragmentation
+        }
+    }
+
+    // Print allocation results
+    printf("process no\tprocess size\tblock no\n");
+    for (i = 0; i < pc; i++)
+    {
+        if (allocated[i] != -1)
+        {
+            printf("%d\t\t%d\t\t%d\n", i + 1, pro[i], allocated[i] + 1);
+        }
+        else
+        {
+            printf("%d\t\t%d\t\tNot allocated\n", i + 1, pro[i]);
+        }
+    }
+    printf("Total Internal Fragmentation: %d\n", frag);
+}
+
+// Function to allocate memory blocks using Worst Fit (WF) algorithm
+void wf(int mem[], int mc, int pro[], int pc)
+{
+    int occupied[20], allocated[20], i, frag = 0;
+
+    // Initialize arrays to keep track of memory block occupation and allocation
+    for (i = 0; i < mc; i++)
+    {
+        occupied[i] = 0; // 0 means unoccupied
+    }
+    for (i = 0; i < pc; i++)
+    {
+        allocated[i] = -1; // -1 means not allocated
+    }
+
+    // Allocate processes using Worst Fit algorithm
+    for (i = 0; i < pc; i++)
+    {
+        int windex = -1; // Index of the worst-fit memory block
+        for (int j = 0; j < mc; j++)
+        {
+            if ((pro[i] <= mem[j]) && (occupied[j] == 0))
+            {
+                if (windex == -1 || mem[j] > mem[windex])
+                {
+                    windex = j; // Update the worst-fit index
+                }
+            }
+        }
+        if (windex != -1)
+        {
+            allocated[i] = windex; // Allocate process i to the worst-fit block
+            occupied[windex] = 1; // Mark the worst-fit block as occupied
+            frag += mem[windex] - pro[i]; // Calculate internal fragmentation
+        }
+    }
+
+    // Print allocation results
+    printf("process no\tprocess size\tblock no\n");
+    for (i = 0; i < pc; i++)
+    {
+        if (allocated[i] != -1)
+        {
+            printf("%d\t\t%d\t\t%d\n", i + 1, pro[i], allocated[i] + 1);
+        }
+        else
+        {
+            printf("%d\t\t%d\t\tNot allocated\n", i + 1, pro[i]);
+        }
+    }
+    printf("Total Internal Fragmentation: %d\n", frag);
+}
+
+int main()
+{
+    int mc, pc, mem[20], pro[20];
+
+    // Input the number and sizes of memory blocks
+    printf("Enter the number of memory blocks\n");
+    scanf("%d", &mc);
+    for (int i = 0; i < mc; i++)
+    {
+        printf("Enter size of memory block %d\n", i + 1);
+        scanf("%d", &mem[i]);
+    }
+
+    // Input the number and sizes of processes
+    printf("Enter the number of processes\n");
+    scanf("%d", &pc);
+    for (int i = 0; i < pc; i++)
+    {
+        printf("Enter size of process %d\n", i + 1);
+        scanf("%d", &pro[i]);
+    }
+
+    int choice;
+
+    // Menu-driven loop for selecting memory allocation algorithm
+    while (1)
+    {
+        printf("1.FF\n2.BF\n3.WF\n4.Exit\n");
+        scanf("%d", &choice);
+        switch (choice)
+        {
+        case 1:
+            ff(mem, mc, pro, pc); // Call First Fit function
+            break;
+        case 2:
+            bf(mem, mc, pro, pc); // Call Best Fit function
+            break;
+        case 3:
+            wf(mem, mc, pro, pc); // Call Worst Fit function
+            break;
+        case 4:
+            exit(0); // Exit the program
+        }
+    }
+}
